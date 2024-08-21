@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def visual_plot(active: bool=True, v: str='all'):
+def visual_plot(active: bool=True):
 
     def plotter(function):
         def wrapper(*args):
@@ -9,14 +9,11 @@ def visual_plot(active: bool=True, v: str='all'):
             if active:
                 plt.plot(to_plot)
                 plt.yticks(range(0, 110, 10))
-                if v == 'one':
-                    plt.show()
-                    plt.clf()
             return to_plot
         return wrapper
     return plotter
 
-@visual_plot(active=False)
+@visual_plot(active=True)
 def random_roll(num: int = 100, start: int = 0)-> list[int]:
     result = [start]
     x = 0
@@ -37,36 +34,28 @@ def random_roll(num: int = 100, start: int = 0)-> list[int]:
         x += 1
     return result
 
-def distribution_plot(function):
-    def wrapper(*args):
-        np_all_w = np.array(function(*args))
-        plt.hist(np_all_w[:, -1])
-        plt.show()
-        return np_all_w
-    return wrapper
-
-# @distribution_plot
 def simulator(sim_times: int=500):
     all_random_walks = []
     for i in range(sim_times):
         np.random.seed(i+666)
         all_random_walks.append(random_roll())
-    return np.array(all_random_walks)[:,-1]
+    plt.show()
+    np_all_w = np.array(all_random_walks)[:,-1]
+    plt.hist(np_all_w, color='lightgreen', ec='black')
+    plt.show()
+    # return np.array([row[-1] for row in all_random_walks])
+    return np_all_w
     
-def odds_counter(value: int, ends: np.ndarray, sim_count: int = 500):
+def odds_calculater(value: int, ends: np.ndarray, sim_count: int = 500):
     count = np.count_nonzero(ends >= value)
-    # print(count)
     est_chance = count / 500 * 100
     print(f"the estimated chance that you'll reach at least {value} steps\
  high if you play this Empire State Building game is {est_chance:.2f}%")
     
 
-
-
 def main():
     ends = simulator()
-    
-    odds_counter(60, ends)
+    odds_calculater(80, ends)
 
 
 if __name__ == '__main__':
