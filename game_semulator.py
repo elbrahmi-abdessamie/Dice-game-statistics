@@ -42,19 +42,32 @@ def distribution_plot(function):
         np_all_w = np.array(function(*args))
         plt.hist(np_all_w[:, -1])
         plt.show()
+        return np_all_w
     return wrapper
 
-@distribution_plot
+# @distribution_plot
 def simulator(sim_times: int=500):
     all_random_walks = []
     for i in range(sim_times):
         np.random.seed(i+666)
         all_random_walks.append(random_roll())
-    return all_random_walks
+    return np.array(all_random_walks)[:,-1]
+    
+def odds_counter(value: int, ends: np.ndarray, sim_count: int = 500):
+    count = np.count_nonzero(ends >= value)
+    # print(count)
+    est_chance = count / 500 * 100
+    print(f"the estimated chance that you'll reach at least {value} steps\
+ high if you play this Empire State Building game is {est_chance:.2f}%")
     
 
+
+
 def main():
-    simulator()
+    ends = simulator()
+    
+    odds_counter(60, ends)
+
 
 if __name__ == '__main__':
     main()
